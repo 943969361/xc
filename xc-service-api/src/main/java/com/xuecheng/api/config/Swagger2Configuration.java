@@ -12,7 +12,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 //
 @Configuration
-@EnableSwagger2 // 扫面包生成swagger
+@EnableSwagger2 // 扫包生成swagger
 public class Swagger2Configuration {
     @Bean
     public Docket createRestApi() {
