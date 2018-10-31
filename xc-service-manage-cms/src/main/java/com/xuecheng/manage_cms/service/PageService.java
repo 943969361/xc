@@ -75,7 +75,7 @@ public class PageService {
 
         QueryResult<CmsPage> queryResult = new QueryResult();
         queryResult.setList(all.getContent());
-        queryResult.setTotal(size);
+        queryResult.setTotal(all.getTotalElements());
         QueryResponseResult queryResponseResult = new QueryResponseResult(CommonCode.SUCCESS,queryResult);
 
         // 返回
@@ -86,10 +86,10 @@ public class PageService {
     public CmsPageResult add( CmsPage cmsPage){
         // 调用dao
         // 根据三个字段查询是否有重复的页面
-        CmsPage byPageNameAndpAndPageWebPathAndSiteId = cmsPageRepository.findByPageNameAndPageWebPathAndSiteId(
+        CmsPage byByPageNameAndPageWebPathAndSiteId = cmsPageRepository.findByPageNameAndPageWebPathAndSiteId(
                 cmsPage.getPageName(),cmsPage.getPageWebPath(),cmsPage.getSiteId());
         // 判断是否重复
-        if(byPageNameAndpAndPageWebPathAndSiteId == null){
+        if(byByPageNameAndPageWebPathAndSiteId == null){
             cmsPage.setPageId(null);
             //添加页面主键由spring data 自动生成
             cmsPageRepository.save(cmsPage);
