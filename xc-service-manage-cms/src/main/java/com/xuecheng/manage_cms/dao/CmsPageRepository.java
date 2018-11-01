@@ -13,6 +13,8 @@ public interface CmsPageRepository extends MongoRepository<CmsPage,String> {
     // 根据站点id查询
     CmsPage findBySiteId(String SiteId);
 
+    // 设置主键是否重复
     CmsPage findByPageNameAndPageWebPathAndSiteId(String pageName,String siteId,String
             pageWebPath);
+
 }

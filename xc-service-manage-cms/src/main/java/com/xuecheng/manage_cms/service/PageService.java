@@ -6,10 +6,13 @@ import com.xuecheng.framework.domain.cms.response.CmsPageResult;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.QueryResult;
+import com.xuecheng.framework.model.response.ResponseResult;
 import com.xuecheng.manage_cms.dao.CmsPageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * 作者: lin
@@ -82,7 +85,7 @@ public class PageService {
         return  queryResponseResult;
     }
 
-
+    // 添加
     public CmsPageResult add( CmsPage cmsPage){
         // 调用dao
         // 根据三个字段查询是否有重复的页面
@@ -99,5 +102,66 @@ public class PageService {
         }else {
             return new CmsPageResult(CommonCode.FAIL,null);
         }
+    }
+
+    // 根据id查询
+    public CmsPage getById(String id){
+        Optional<CmsPage> optional = cmsPageRepository.findById(id);
+        if(optional.isPresent()){
+            return  optional.get();
+        }
+        return null;
+    }
+
+
+    // 修改
+    public CmsPageResult edit (String id,CmsPage cmsPage){
+
+        // 1.查询信息
+        CmsPage byId = this.getById(id);
+        if(byId != null){
+            // 查到信息
+            // 2.修改
+            byId.setTemplateId(cmsPage.getTemplateId());
+            //更新所属站点
+            byId.setSiteId(cmsPage.getSiteId());
+            //更新页面别名
+            byId.setPageAliase(cmsPage.getPageAliase());
+            //更新页面名称
+            byId.setPageName(cmsPage.getPageName());
+            //更新访问路径
+            byId.setPageWebPath(cmsPage.getPageWebPath());
+            //更新物理路径
+            byId.setPagePhysicalPath(cmsPage.getPagePhysicalPath());
+            //执行更新
+            // 3.保存
+            CmsPage save = cmsPageRepository.save(byId);
+
+            // 4.返回
+            if(save != null){
+                CmsPageResult cmsPageResult = new CmsPageResult(CommonCode.SUCCESS,cmsPage);
+                return cmsPageResult;
+            }
+        }
+        return new CmsPageResult(CommonCode.FAIL,null);
+    }
+
+
+    // 删除
+    public ResponseResult del (String id){
+
+        Boolean flag = false;
+        if(id != null){
+            CmsPage cmsPage = this.getById(id);
+            if(cmsPage != null){
+                cmsPageRepository.deleteById(id);
+                flag = true;
+            }
+            if(flag){
+                return new  ResponseResult (CommonCode.SUCCESS);
+            }
+        }
+        return new  ResponseResult (CommonCode.FAIL);
+
     }
 }
