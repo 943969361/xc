@@ -2,7 +2,9 @@ package com.xuecheng.manage_cms.service;
 
 import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
+import com.xuecheng.framework.domain.cms.response.CmsCode;
 import com.xuecheng.framework.domain.cms.response.CmsPageResult;
+import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.QueryResult;
@@ -91,17 +93,18 @@ public class PageService {
         // 根据三个字段查询是否有重复的页面
         CmsPage byByPageNameAndPageWebPathAndSiteId = cmsPageRepository.findByPageNameAndPageWebPathAndSiteId(
                 cmsPage.getPageName(),cmsPage.getPageWebPath(),cmsPage.getSiteId());
+
         // 判断是否重复
-        if(byByPageNameAndPageWebPathAndSiteId == null){
-            cmsPage.setPageId(null);
-            //添加页面主键由spring data 自动生成
-            cmsPageRepository.save(cmsPage);
-            //返回结果
-            CmsPageResult cmsPageResult = new CmsPageResult(CommonCode.SUCCESS,cmsPage);
-            return cmsPageResult;
-        }else {
-            return new CmsPageResult(CommonCode.FAIL,null);
+        if(byByPageNameAndPageWebPathAndSiteId !=null){
+        //校验页面是否存在，已存在则抛出异常
+            ExceptionCast.cast(CmsCode.CMS_ADDPAGE_EXISTSNAME);
         }
+        cmsPage.setPageId(null);
+        //添加页面主键由spring data 自动生成
+        cmsPageRepository.save(cmsPage);
+        //返回结果
+        CmsPageResult cmsPageResult = new CmsPageResult(CommonCode.SUCCESS,cmsPage);
+        return cmsPageResult;
     }
 
     // 根据id查询
