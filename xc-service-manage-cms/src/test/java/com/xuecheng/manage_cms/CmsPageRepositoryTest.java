@@ -132,4 +132,6 @@ public class CmsPageRepositoryTest {
         Page<CmsPage> all = cmsPageRepository.findAll(example, pageable);
         System.out.println(all);
     }
+
+
 }
