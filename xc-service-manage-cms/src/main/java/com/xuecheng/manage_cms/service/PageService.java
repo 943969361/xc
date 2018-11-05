@@ -136,6 +136,8 @@ public class PageService {
             byId.setPageWebPath(cmsPage.getPageWebPath());
             //更新物理路径
             byId.setPagePhysicalPath(cmsPage.getPagePhysicalPath());
+            // 访问路径
+            byId.setDataUrl(cmsPage.getDataUrl());
             //执行更新
             // 3.保存
             CmsPage save = cmsPageRepository.save(byId);
