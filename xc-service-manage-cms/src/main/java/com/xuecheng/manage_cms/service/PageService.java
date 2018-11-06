@@ -142,7 +142,8 @@ public class PageService {
     public CmsPage getById(String id) {
         Optional<CmsPage> optional = cmsPageRepository.findById(id);
         if (optional.isPresent()) {
-            return optional.get();
+            CmsPage cmsPage = optional.get();
+            return cmsPage;
         }
         return null;
     }
@@ -241,6 +242,7 @@ public class PageService {
         if(StringUtils.isEmpty(dataUrl)){
             ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_DATAURLISNULL);
         }
+        // TODO
         ResponseEntity<Map> forEntity = restTemplate.getForEntity(dataUrl, Map.class);
         Map body = forEntity.getBody();
         return body;
