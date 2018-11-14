@@ -12,53 +12,48 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * 统一异常捕获类
- * @author Administrator
- * @version 1.0
- * @create 2018-09-14 17:32
- **/
-@ControllerAdvice//控制器增强
+ * 作者: lin
+ * 描述: 异常捕获类
+ * 日期: 2018/11/1 14:29
+ */
+@ControllerAdvice
+//控制器增强注解
 public class ExceptionCatch {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionCatch.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandler.class);
 
-    //定义map，配置异常类型所对应的错误代码
-    private static ImmutableMap<Class<? extends Throwable>,ResultCode> EXCEPTIONS;
-    //定义map的builder对象，去构建ImmutableMap
-    protected static ImmutableMap.Builder<Class<? extends Throwable>,ResultCode> builder = ImmutableMap.builder();
-
-    //捕获CustomException此类异常
     @ExceptionHandler(CustomException.class)
     @ResponseBody
-    public ResponseResult customException(CustomException customException){
-        //记录日志
-        LOGGER.error("catch exception:{}",customException.getMessage());
-        ResultCode resultCode = customException.getResultCode();
+    public ResponseResult customerException (CustomException customerException){
+
+        // 日志记录
+        LOGGER.info("catch exception :" +customerException.getMessage());
+        ResultCode resultCode = customerException.getResultCode();
         return new ResponseResult(resultCode);
     }
-    //捕获Exception此类异常
+
+    private static ImmutableMap<Class<? extends Throwable>,ResultCode> EXCEPTIONS;
+    protected static ImmutableMap.Builder<Class<? extends Throwable>,ResultCode> builder =
+            ImmutableMap.builder();
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public ResponseResult exception(Exception exception){
-        //记录日志
-        LOGGER.error("catch exception:{}",exception.getMessage());
-        if(EXCEPTIONS == null){
-            EXCEPTIONS = builder.build();//EXCEPTIONS构建成功
+        //捕获Exception异常
+    public ResponseResult exception(Exception e) {
+        LOGGER.error("catch exception : {}\r\nexception: ",e.getMessage(), e);
+        if(EXCEPTIONS == null)
+            EXCEPTIONS = builder.build();
+        final ResultCode resultCode = EXCEPTIONS.get(e.getClass());
+        final ResponseResult responseResult;
+        if (resultCode != null) {
+            responseResult = new ResponseResult(resultCode);
+        } else {
+            responseResult = new ResponseResult(CommonCode.SERVER_ERROR);
         }
-        //从EXCEPTIONS中找异常类型所对应的错误代码，如果找到了将错误代码响应给用户，如果找不到给用户响应99999异常
-        ResultCode resultCode = EXCEPTIONS.get(exception.getClass());
-        if(resultCode !=null){
-            return new ResponseResult(resultCode);
-        }else{
-            //返回99999异常
-            return new ResponseResult(CommonCode.SERVER_ERROR);
-        }
-
-
+        return responseResult;
     }
 
-    static {
-        //定义异常类型所对应的错误代码
+    static{
+        //在这里加入一些基础的异常类型判断
         builder.put(HttpMessageNotReadableException.class,CommonCode.INVALID_PARAM);
     }
 }

@@ -9,15 +9,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author Administrator
- * @version 1.0
- * @create 2018-09-15 15:15
- **/
+ * 作者: lin
+ * 描述:
+ * 日期: 2018/11/5 14:38
+ */
+
 @Configuration
 public class MongoConfig {
+
     @Value("${spring.data.mongodb.database}")
     String db;
-
     @Bean
     public GridFSBucket getGridFSBucket(MongoClient mongoClient){
         MongoDatabase database = mongoClient.getDatabase(db);
