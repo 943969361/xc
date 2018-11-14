@@ -1,6 +1,5 @@
 package com.xuecheng.search;
 
-
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -33,130 +32,127 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 作者: lin
- * 描述:
- * 日期: 2018/11/14 09:57
- */
+ * @author Administrator
+ * @version 1.0
+ **/
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class TestIndex {
 
     @Autowired
-    private RestHighLevelClient client;
+    RestHighLevelClient client;
 
     @Autowired
-    private RestClient restClient;
+    RestClient restClient;
 
+    //创建索引库
     @Test
-    // 删除索引库
-    public void testDeleteIndex() throws IOException {
-
-        // 删除索引对象
-        DeleteIndexRequest indexRequest = new DeleteIndexRequest("xc_course");
-        // 操作索引的客户端
+    public void testCreateIndex() throws IOException {
+        //创建索引对象
+        CreateIndexRequest createIndexRequest = new CreateIndexRequest("xc_course");
+        //设置参数
+        createIndexRequest.settings(Settings.builder().put("number_of_shards","1").put("number_of_replicas","0"));
+        //指定映射
+        createIndexRequest.mapping("doc"," {\n" +
+                " \t\"properties\": {\n" +
+                "            \"studymodel\":{\n" +
+                "             \"type\":\"keyword\"\n" +
+                "           },\n" +
+                "            \"name\":{\n" +
+                "             \"type\":\"keyword\"\n" +
+                "           },\n" +
+                "           \"description\": {\n" +
+                "              \"type\": \"text\",\n" +
+                "              \"analyzer\":\"ik_max_word\",\n" +
+                "              \"search_analyzer\":\"ik_smart\"\n" +
+                "           },\n" +
+                "           \"pic\":{\n" +
+                "             \"type\":\"text\",\n" +
+                "             \"index\":false\n" +
+                "           }\n" +
+                " \t}\n" +
+                "}", XContentType.JSON);
+        //操作索引的客户端
         IndicesClient indices = client.indices();
-        // 执行删除索引
-        DeleteIndexResponse delete = indices.delete(indexRequest);
+        //执行创建索引库
+        CreateIndexResponse createIndexResponse = indices.create(createIndexRequest);
+        //得到响应
+        boolean acknowledged = createIndexResponse.isAcknowledged();
+        System.out.println(acknowledged);
+
+    }
+
+    //删除索引库
+    @Test
+    public void testDeleteIndex() throws IOException {
+        //删除索引对象
+        DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest("xc_course");
+        //操作索引的客户端
+        IndicesClient indices = client.indices();
+        //执行删除索引
+        DeleteIndexResponse delete = indices.delete(deleteIndexRequest);
+        //得到响应
         boolean acknowledged = delete.isAcknowledged();
         System.out.println(acknowledged);
 
     }
 
-    // 创建索引库
+    //添加文档
     @Test
-    public void testCreatIndex() throws IOException {
-
-        CreateIndexRequest createIndexRequest = new CreateIndexRequest();
-        // 设置分片数
-        createIndexRequest.settings(Settings.builder().put("number_of_shards",1).put("number_of_replicas",0));
-        // 设置映射
-        createIndexRequest.mapping("doc","{\n" +
-                "\"properties\": {\n" +
-                "\"name\": {\n" +
-                "\"type\": \"text\",\n" +
-                "\"analyzer\":\"ik_max_word\",\n" +
-                "\"search_analyzer\":\"ik_smart\"\n" +
-                "},\n" +
-                "\"description\": {\n" +
-                "\"type\": \"text\",\n" +
-                "\"analyzer\":\"ik_max_word\",\n" +
-                "\"search_analyzer\":\"ik_smart\"\n" +
-                "},\n" +
-                "\"pic\":{\n" +
-                "\"type\":\"text\",\n" +
-                "\"index\":false\n" +
-                "},\n" +
-                "\"studymodel\":{\n" +
-                "\"type\":\"text\"\n" +
-                "}\n" +
-                "}\n" +
-                "}", XContentType.JSON);
-        IndicesClient indices = client.indices();
-        CreateIndexResponse response = indices.create(createIndexRequest);
-        boolean acknowledged = response.isAcknowledged();
-        System.out.println(acknowledged);
-    }
-
-    // 添加文档
-    @Test
-    public void testAddFile () throws IOException {
-
-        //准备json数据放入map里
+    public void testAddDoc() throws IOException {
+        //文档内容
+        //准备json数据
         Map<String, Object> jsonMap = new HashMap<>();
         jsonMap.put("name", "spring cloud实战");
         jsonMap.put("description", "本课程主要从四个章节进行讲解： 1.微服务架构入门 2.spring cloud 基础入门 3.实战Spring Boot 4.注册中心eureka。");
         jsonMap.put("studymodel", "201001");
-        SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy‐MM‐dd HH:mm:ss");
+        SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         jsonMap.put("timestamp", dateFormat.format(new Date()));
         jsonMap.put("price", 5.6f);
 
-        // 索引请求对象
+        //创建索引创建对象
         IndexRequest indexRequest = new IndexRequest("xc_course","doc");
-        // 指定索引文档内容
+        //文档内容
         indexRequest.source(jsonMap);
-        // 获取返回值
-        IndexResponse index = client.index(indexRequest);
-        // 返回值
-        DocWriteResponse.Result result = index.getResult();
+        //通过client进行http的请求
+        IndexResponse indexResponse = client.index(indexRequest);
+        DocWriteResponse.Result result = indexResponse.getResult();
         System.out.println(result);
+
     }
 
-    // 查询文档
+    //查询文档
     @Test
-    public void testGetFile() throws IOException {
-
-        GetRequest getRequest = new GetRequest("xc_course","doc", "4028e58161bcf7f40161bcf8b77c0000");
-        GetResponse documentFields = client.get(getRequest);
-        boolean exists = documentFields.isExists();
-        Map<String, Object> source = documentFields.getSource();
-        System.out.println(source);
-    }
-
-    // 跟新文档
-    @Test
-    public void testUpdateFile() throws IOException {
-
-        UpdateRequest updateRequest = new UpdateRequest("xc_course", "doc","4028e58161bcf7f40161bcf8b77c0000");
-        Map<String,String> map = new HashMap<>();
-        map.put("name","spring cloud");
-        updateRequest.doc(map);
-        UpdateResponse update = client.update(updateRequest);
-        RestStatus status = update.status();
-        System.out.println(status);
+    public void testGetDoc() throws IOException {
+        //查询请求对象
+        GetRequest getRequest = new GetRequest("xc_course","doc","4028e58161bcf7f40161bcf8b77c0000");
+        GetResponse getResponse = client.get(getRequest);
+        //得到文档的内容
+        Map<String, Object> sourceAsMap = getResponse.getSourceAsMap();
+        System.out.println(sourceAsMap);
     }
 
     // 删除文档
     @Test
-    public void testDeleteFile() throws IOException {
+    public void testDeleteDoc() throws IOException {
 
-        String id = "4028e58161bcf7f40161bcf8b77c0000";
-        DeleteRequest deleteRequest = new DeleteRequest("xc_course","doc",id);
+        DeleteRequest deleteRequest = new DeleteRequest("xc_course","doc","4028e58161bcf7f40161bcf8b77c0000");
         DeleteResponse delete = client.delete(deleteRequest);
         DocWriteResponse.Result result = delete.getResult();
         System.out.println(result);
-
     }
 
+    // 修改文档
+    @Test
+    public void testUpdateDoc() throws IOException {
 
+        UpdateRequest updateRequest = new UpdateRequest("xc_course","doc","4028e58161bcf7f40161bcf8b77c0000");
+        Map<String,String> map = new HashMap<>();
+        map.put("name","spring bootsssss");
+        updateRequest.doc(map);
+        UpdateResponse update = client.update(updateRequest);
+        RestStatus status = update.status();
+        System.out.println(status);
 
+    }
 }
