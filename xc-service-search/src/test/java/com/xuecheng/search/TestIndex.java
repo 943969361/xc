@@ -18,7 +18,6 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.rest.RestStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,8 +150,9 @@ public class TestIndex {
         map.put("name","spring bootsssss");
         updateRequest.doc(map);
         UpdateResponse update = client.update(updateRequest);
-        RestStatus status = update.status();
-        System.out.println(status);
+        boolean fragment = update.isFragment();
+        System.out.println(fragment);
 
     }
+
 }
