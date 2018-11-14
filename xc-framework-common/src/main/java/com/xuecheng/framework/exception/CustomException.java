@@ -3,21 +3,21 @@ package com.xuecheng.framework.exception;
 import com.xuecheng.framework.model.response.ResultCode;
 
 /**
- * 作者: lin
- * 描述: 异常定义类
- * 日期: 2018/11/1 14:14
- */
+ * 自定义异常类型
+ * @author Administrator
+ * @version 1.0
+ * @create 2018-09-14 17:28
+ **/
 public class CustomException extends RuntimeException {
 
+    //错误代码
     ResultCode resultCode;
 
-    // 构造方法
     public CustomException(ResultCode resultCode){
         this.resultCode = resultCode;
     }
-
     public ResultCode getResultCode(){
-        return this.resultCode;
+        return resultCode;
     }
 
 

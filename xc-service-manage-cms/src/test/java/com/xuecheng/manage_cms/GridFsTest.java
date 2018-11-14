@@ -21,59 +21,45 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * 作者: lin
- * 描述: 文件服务器
- * 日期: 2018/11/5 14:05
- */
+ * @author Administrator
+ * @version 1.0
+ * @create 2018-09-12 18:11
+ **/
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class GridFsTest {
 
-
-    // 存文件
     @Autowired
-    private GridFsTemplate gridFsTemplate;
+    GridFsTemplate gridFsTemplate;
 
-    // 下载文件
     @Autowired
-    private GridFSBucket gridFSBucket;
+    GridFSBucket gridFSBucket;
 
-
+    //存文件
     @Test
-    public void  testGridFs() throws FileNotFoundException {
-
-        File file = new File("E:/index_banner.ftl");
-
-        FileInputStream fileInputStream= new FileInputStream(file);
-        ObjectId objectId =  gridFsTemplate.store(fileInputStream,"index_banner.ftl","");
-        String toString = objectId.toString();
-        System.out.println(toString);
+    public void testStore() throws FileNotFoundException {
+        //定义file
+        File file =new File("c:/course.ftl");
+        //定义fileInputStream
+        FileInputStream fileInputStream = new FileInputStream(file);
+        ObjectId objectId = gridFsTemplate.store(fileInputStream, "course.ftl");
+        System.out.println(objectId);
     }
 
-    // 下载文件
+    //取文件
     @Test
-    public void download()throws Exception{
+    public void queryFile() throws IOException {
+        //根据文件id查询文件
+        GridFSFile gridFSFile = gridFsTemplate.findOne(Query.query(Criteria.where("_id").is("5b9cb02435794805b43b2b04")));
 
-        String fild = "5bdfe3b7fb76e5122c7783d6";
-        GridFSFile gridFSFile = gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(fild)));
-        // 打开一个下载流
-        //打开下载流对象
-        GridFSDownloadStream gridFSDownloadStream =
-                gridFSBucket.openDownloadStream(gridFSFile.getObjectId());
-        //创建gridFsResource，用于获取流对象
+        //打开一个下载流对象
+        GridFSDownloadStream gridFSDownloadStream = gridFSBucket.openDownloadStream(gridFSFile.getObjectId());
+        //创建GridFsResource对象，获取流
         GridFsResource gridFsResource = new GridFsResource(gridFSFile,gridFSDownloadStream);
-        //获取流中的数据
-        String s = IOUtils.toString(gridFsResource.getInputStream(), "UTF-8");
-
-        System.out.println(s);
+        //从流中取数据
+        String content = IOUtils.toString(gridFsResource.getInputStream(), "utf-8");
+        System.out.println(content);
 
     }
-
-    @Test
-    public void testDelFile() throws IOException {
-        //根据文件id删除fs.files和fs.chunks中的记录
-        gridFsTemplate.delete(Query.query(Criteria.where("_id").is("5bdfe3b7fb76e5122c7783d6")));
-    }
-
 
 }

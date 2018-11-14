@@ -88,5 +88,10 @@ public class CmsPageRepositoryTest {
 
     }
 
-
+    //根据页面名称查询
+    @Test
+    public void testfindByPageName(){
+        CmsPage cmsPage = cmsPageRepository.findByPageName("测试页面");
+        System.out.println(cmsPage);
+    }
 }
