@@ -5,6 +5,7 @@
     <resultMap id="teachplanMap" type="com.xuecheng.framework.domain.course.ext.TeachplanNode">
          <id column="one_id" property="id"></id>
          <result column="one_pname" property="pname"></result>
+        <!--一对多使用collection ，属性property-->
          <collection property="children" ofType="com.xuecheng.framework.domain.course.ext.TeachplanNode">
                <id column="two_id" property="id"></id>
                <result column="two_pname" property="pname"></result>
@@ -41,4 +42,6 @@
           c.orderby
 
     </select>
+
+
 </mapper>

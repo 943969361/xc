@@ -9,4 +9,6 @@
     <select id="findCourseList" resultType="com.xuecheng.framework.domain.course.CourseBase">
        select * from course_base
     </select>
+
+
 </mapper>
