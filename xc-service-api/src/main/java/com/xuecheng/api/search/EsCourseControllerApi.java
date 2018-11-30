@@ -14,4 +14,6 @@ public interface EsCourseControllerApi {
     //搜索课程信息
     @ApiOperation("课程综合搜索")
     public QueryResponseResult<CoursePub> list(int page, int size, CourseSearchParam courseSearchParam);
+
+
 }
