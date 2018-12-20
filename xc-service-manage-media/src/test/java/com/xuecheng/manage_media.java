@@ -1,7 +1,5 @@
 package com.xuecheng;
 
-import org.junit.Test;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -18,7 +16,7 @@ import java.util.List;
 public class manage_media {
 
 
-    @Test
+    //@Test
     public void test() throws IOException {
         // 找到源文件
         File file = new File("F:\\test\\lucene.avi");
@@ -51,7 +49,7 @@ public class manage_media {
     }
 
 
-    @Test
+    //@Test
     public void test2() throws IOException {
         // 获取文件
         File file = new File("F:\\test\\block\\");

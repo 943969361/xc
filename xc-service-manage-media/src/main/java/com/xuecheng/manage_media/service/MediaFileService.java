@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import sun.reflect.generics.repository.MethodRepository;
 
 import java.io.*;
 import java.util.*;
@@ -26,9 +25,6 @@ import java.util.*;
  */
 @Service
 public class MediaFileService {
-
-    @Autowired
-    private MethodRepository methodRepository;
 
     @Autowired
     private MediaFileRepository mediaFileRepository;
@@ -331,7 +327,6 @@ public class MediaFileService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return false;
     }
 }
